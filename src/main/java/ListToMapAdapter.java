@@ -1,10 +1,20 @@
 import java.util.*;
 
 public class ListToMapAdapter<K, V> implements Map<K, V> {
-    private List<V> list;
+    private final List<V> list;
 
     public ListToMapAdapter(List<V> list) {
         this.list = list;
+    }
+
+    private int indexOf(Object key) {
+        if (key instanceof Integer) {
+            int index = (Integer) key;
+            if (index >= 0 && index < list.size()) {
+                return index;
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -19,10 +29,7 @@ public class ListToMapAdapter<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        if (key instanceof Integer) {
-            return (Integer) key < list.size();
-        }
-        return false;
+        return indexOf(key) >= 0;
     }
 
     @Override
@@ -32,29 +39,29 @@ public class ListToMapAdapter<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-        if (key instanceof Integer) {
-            int index = (Integer) key;
-            return (index >= 0 && index < list.size()) ? list.get(index) : null;
-        }
-        return null;
+        int index = indexOf(key);
+        return (index >= 0) ? list.get(index) : null;
     }
 
     @Override
     public V put(K key, V value) {
-        if (key instanceof Integer) {
-            int index = (Integer) key;
-            return (index < list.size()) ? list.set(index, value) : null;
+        if (!(key instanceof Integer)) {
+            return null;
+        }
+        int index = (Integer) key;
+        if (index >= 0 && index < list.size()) {
+            return list.set(index, value);
+        }
+        if (index == list.size()) {
+            list.add(value);
         }
         return null;
     }
 
     @Override
     public V remove(Object key) {
-        if (key instanceof Integer) {
-            int index = (Integer) key;
-            return list.remove(index);
-        }
-        return null;
+        int index = indexOf(key);
+        return (index >= 0) ? list.remove(index) : null;
     }
 
     @Override
@@ -62,15 +69,15 @@ public class ListToMapAdapter<K, V> implements Map<K, V> {
         list.clear();
     }
 
-    // Métodos adicionais exigidos pela interface Map, mas não suportados
-    @Override
-    public Set<K> keySet() {
-        throw new UnsupportedOperationException("keySet is not supported");
-    }
-
     @Override
     public Collection<V> values() {
         return list;
+    }
+
+    // Operações da interface Map sem correspondência direta em uma List
+    @Override
+    public Set<K> keySet() {
+        throw new UnsupportedOperationException("keySet is not supported");
     }
 
     @Override

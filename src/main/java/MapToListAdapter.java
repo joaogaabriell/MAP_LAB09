@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class MapToListAdapter<T> implements List<T> {
-    private Map<Integer, T> map;
+    private final Map<Integer, T> map;
 
     public MapToListAdapter(Map<Integer, T> map) {
         this.map = map;
@@ -45,11 +45,7 @@ public class MapToListAdapter<T> implements List<T> {
 
     @Override
     public boolean remove(Object o) {
-        if (map.containsValue(o)) {
-            map.values().remove(o);
-            return true;
-        }
-        return false;
+        return map.values().remove(o);
     }
 
     @Override
@@ -129,7 +125,6 @@ public class MapToListAdapter<T> implements List<T> {
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addAll'");
+        throw new UnsupportedOperationException("addAll by index is not supported");
     }
 }
